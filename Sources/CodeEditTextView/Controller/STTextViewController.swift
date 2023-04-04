@@ -170,6 +170,7 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
         textView.setupMenus()
         textView.delegate = self
         textView.highlightSelectedLine = self.isEditable
+        textView.textLayoutManager.delegate = self
 
         scrollView.documentView = textView
 
@@ -226,7 +227,7 @@ public class STTextViewController: NSViewController, STTextViewDelegate, ThemeAt
     // MARK: UI
 
     /// A default `NSParagraphStyle` with a set `lineHeight`
-    private lazy var paragraphStyle: NSMutableParagraphStyle = generateParagraphStyle()
+    internal lazy var paragraphStyle: NSMutableParagraphStyle = generateParagraphStyle()
 
     private func generateParagraphStyle() -> NSMutableParagraphStyle {
         // swiftlint:disable:next force_cast
