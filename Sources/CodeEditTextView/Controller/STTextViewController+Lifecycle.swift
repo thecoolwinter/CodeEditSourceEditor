@@ -7,10 +7,12 @@
 
 import AppKit
 import STTextView
+import TextStorage
 
 extension STTextViewController {
     public override func loadView() {
         textView = STTextView()
+        textView.textContentStorage?.textStorage = TextStorage()
 
         let scrollView = CEScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false

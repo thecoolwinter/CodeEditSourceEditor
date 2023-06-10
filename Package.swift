@@ -32,17 +32,21 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "TextStorage",
+            publicHeadersPath: "."
+        ),
+        .target(
             name: "CodeEditTextView",
             dependencies: [
                 "STTextView",
                 "CodeEditLanguages",
-                "TextFormation"
+                "TextFormation",
+                "TextStorage"
             ],
             plugins: [
                 .plugin(name: "SwiftLint", package: "SwiftLintPlugin")
             ]
         ),
-
         .testTarget(
             name: "CodeEditTextViewTests",
             dependencies: [
