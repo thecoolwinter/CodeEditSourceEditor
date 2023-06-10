@@ -19,10 +19,6 @@ final class RangeTreeTests: XCTestCase {
         tree.insert(NSObject(), NSRange(location: 17, length: 1))
         tree.insert(NSObject(), NSRange(location: 18, length: 1))
 
-        print(treeString(tree.root!) { node in
-            return ("\(node.key)[\(node.color == .black ? "B" : "R")]", node.left, node.right)
-        })
-
         tree.del(NSRange(location: 10, length: 1))
         tree.del(NSRange(location: 11, length: 1))
         tree.del(NSRange(location: 13, length: 1))
