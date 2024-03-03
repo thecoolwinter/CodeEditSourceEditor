@@ -21,9 +21,9 @@ public class TextViewController: NSViewController {
     // swiftlint:disable:next line_length
     public static let cursorPositionUpdatedNotification: Notification.Name = .init("TextViewController.cursorPositionNotification")
 
-    var scrollView: NSScrollView!
-    var textView: TextView!
-    var gutterView: GutterView!
+    public var scrollView: NSScrollView!
+    public var textView: TextView!
+    public var gutterView: GutterView!
     internal var _undoManager: CEUndoManager?
     /// Internal reference to any injected layers in the text view.
     internal var highlightLayers: [CALayer] = []
@@ -180,8 +180,8 @@ public class TextViewController: NSViewController {
 
     // MARK: Init
 
-    init(
-        string: String,
+    public init(
+        storage: NSTextStorage,
         language: CodeLanguage,
         font: NSFont,
         theme: EditorTheme,
@@ -221,7 +221,7 @@ public class TextViewController: NSViewController {
         super.init(nibName: nil, bundle: nil)
 
         self.textView = TextView(
-            string: string,
+            storage: storage,
             font: font,
             textColor: theme.text,
             lineHeightMultiplier: lineHeightMultiple,
@@ -260,7 +260,7 @@ public class TextViewController: NSViewController {
 
     // MARK: - Reload UI
 
-    func reloadUI() {
+    public func reloadUI() {
         textView.isEditable = isEditable
         textView.isSelectable = isSelectable
 
