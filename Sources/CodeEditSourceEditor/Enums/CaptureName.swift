@@ -45,3 +45,16 @@ public enum CaptureName: String, CaseIterable, Sendable {
         }
     }
 }
+
+public enum SemanticTokenModifiers: String, Sendable, Hashable {
+    case declaration
+    case definition
+    case readonly
+    case `static`
+    case deprecated
+    case abstract
+    case async
+    case modification
+    case documentation
+    case defaultLibrary
+}

@@ -17,7 +17,7 @@ extension TextViewController {
 
         self.highlighter = Highlighter(
             textView: textView,
-            highlightProvider: highlightProvider,
+            highlightProviders: [highlightProvider].compactMap({ $0 }),
             theme: theme,
             attributeProvider: self,
             language: language
@@ -38,16 +38,16 @@ extension TextViewController {
 
         if let provider = provider {
             self.highlightProvider = provider
-            highlighter?.setHighlightProvider(provider)
+            highlighter?.setHighlightProviders([provider])
         }
     }
 }
 
 extension TextViewController: ThemeAttributesProviding {
-    public func attributesFor(_ capture: CaptureName?) -> [NSAttributedString.Key: Any] {
+    public func attributesFor(_ token: SyntaxTokenAttributeData?) -> [NSAttributedString.Key: Any] {
         [
             .font: font,
-            .foregroundColor: theme.colorFor(capture),
+            .foregroundColor: theme.colorFor(token?.capture),
             .kern: textView.kern
         ]
     }

@@ -11,4 +11,11 @@ import Foundation
 public struct HighlightRange: Sendable {
     let range: NSRange
     let capture: CaptureName?
+    let modifiers: Set<SemanticTokenModifiers>
+
+    init(range: NSRange, capture: CaptureName?, modifiers: Set<SemanticTokenModifiers> = []) {
+        self.range = range
+        self.capture = capture
+        self.modifiers = modifiers
+    }
 }

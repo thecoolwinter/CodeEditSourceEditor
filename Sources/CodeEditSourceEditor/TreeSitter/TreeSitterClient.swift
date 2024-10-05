@@ -156,23 +156,28 @@ public final class TreeSitterClient: HighlightProviding {
         }
 
         let operation = { [weak self] in
-            let invalidatedRanges = self?.applyEdit(edit: edit) ?? IndexSet()
-            DispatchQueue.dispatchMainIfNot { completion(.success(invalidatedRanges)) }
+            return self?.applyEdit(edit: edit) ?? IndexSet()
         }
 
         let longEdit = range.length > Constants.maxSyncEditLength
         let longDocument = textView.documentRange.length > Constants.maxSyncContentLength
 
-        if forceSyncOperation {
-            executor.execSync(operation)
-            return
+        var execAsync = longEdit || longDocument
+
+        if !execAsync || forceSyncOperation {
+            let result = executor.execSync(operation)
+            if case .success(let invalidatedRanges) = result {
+                DispatchQueue.dispatchMainIfNot { completion(.success(invalidatedRanges)) }
+            } else {
+                execAsync = true && !forceSyncOperation
+            }
         }
 
-        if longEdit || longDocument || !executor.execSync(operation).isSuccess {
+        if execAsync {
             executor.cancelAll(below: .reset) // Cancel all edits, add it to the pending edit queue
             executor.execAsync(
                 priority: .edit,
-                operation: operation,
+                operation: { completion(.success(operation())) },
                 onCancel: { [weak self] in
                     self?.pendingEdits.mutate { edits in
                         edits.append(edit)
@@ -205,22 +210,31 @@ public final class TreeSitterClient: HighlightProviding {
         completion: @escaping @MainActor (Result<[HighlightRange], Error>) -> Void
     ) {
         let operation = { [weak self] in
-            let highlights = self?.queryHighlightsForRange(range: range)
-            DispatchQueue.dispatchMainIfNot { completion(.success(highlights ?? [])) }
+            return self?.queryHighlightsForRange(range: range) ?? []
         }
 
         let longQuery = range.length > Constants.maxSyncQueryLength
         let longDocument = textView.documentRange.length > Constants.maxSyncContentLength
 
-        if forceSyncOperation {
-            executor.execSync(operation)
-            return
+        var execAsync = longQuery || longDocument
+
+        if !execAsync || forceSyncOperation {
+            let result = executor.execSync(operation)
+            if case .success(let highlights) = result {
+                DispatchQueue.dispatchMainIfNot { completion(.success(highlights)) }
+            } else {
+                execAsync = true && !forceSyncOperation
+            }
         }
 
-        if longQuery || longDocument || !executor.execSync(operation).isSuccess {
+        if execAsync {
             executor.execAsync(
                 priority: .access,
-                operation: operation,
+                operation: {
+                    DispatchQueue.dispatchMainIfNot {
+                        completion(.success(operation()))
+                    }
+                },
                 onCancel: {
                     DispatchQueue.dispatchMainIfNot {
                         completion(.failure(HighlightProvidingError.operationCancelled))
